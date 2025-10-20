@@ -27,7 +27,8 @@ export function useTimer(initialDuration: number = 180): UseTimerReturn {
   // Initialize Web Audio API
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      audioContextRef.current = new AudioContextClass();
     }
     return () => {
       if (audioContextRef.current) {
