@@ -250,7 +250,7 @@ export default function Home() {
 
         <button
           onClick={flip}
-          className="flex items-center gap-6 p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer border-none"
+          className="flex items-center justify-center gap-6 p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer border-none min-h-[33vh]"
           title="Click to flip timer"
           aria-label="Flip timer"
         >
