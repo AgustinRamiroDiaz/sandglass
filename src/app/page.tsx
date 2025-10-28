@@ -25,6 +25,7 @@ export default function Home() {
 
   const [customDuration, setCustomDuration] = useState('');
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showConfig, setShowConfig] = useState(false);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -61,6 +62,34 @@ export default function Home() {
             strokeLinejoin="round"
             strokeWidth={2}
             d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      </button>
+
+      {/* Configuration Button */}
+      <button
+        onClick={() => setShowConfig(true)}
+        className="fixed bottom-4 right-4 p-4 bg-gray-700 hover:bg-gray-800 text-white rounded-full shadow-lg transition-all active:scale-95 z-10"
+        title="Configuration"
+        aria-label="Show configuration"
+      >
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
           />
         </svg>
       </button>
@@ -111,6 +140,95 @@ export default function Home() {
               <div>
                 <h3 className="font-semibold mb-1">Controls</h3>
                 <p className="text-sm">Use the play button to start/pause, and the Reset button to return to your set duration.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Configuration Modal */}
+      {showConfig && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          onClick={() => setShowConfig(false)}
+        >
+          <div
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                Configuration
+              </h2>
+              <button
+                onClick={() => setShowConfig(false)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-all"
+                aria-label="Close"
+              >
+                <svg
+                  className="w-6 h-6 text-gray-600 dark:text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">
+                  Duration Presets
+                </h3>
+                <div className="flex gap-3 justify-center mb-4">
+                  {PRESET_DURATIONS.map((preset) => (
+                    <button
+                      key={preset.value}
+                      onClick={() => {
+                        setDuration(preset.value);
+                        setShowConfig(false);
+                      }}
+                      className={`w-16 h-16 rounded-full text-2xl font-bold transition-all active:scale-95 ${
+                        totalDuration === preset.value
+                          ? 'bg-amber-500 text-white shadow-md'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">
+                  Custom Duration
+                </h3>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    value={customDuration}
+                    onChange={(e) => setCustomDuration(e.target.value)}
+                    placeholder="Custom (minutes)"
+                    className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none"
+                    min="1"
+                  />
+                  <button
+                    onClick={() => {
+                      handleCustomDuration();
+                      setShowConfig(false);
+                    }}
+                    className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-all active:scale-95"
+                  >
+                    Set
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -197,44 +315,6 @@ export default function Home() {
           >
             Reset
           </button>
-        </div>
-
-        <div className="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
-          <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
-            Duration Presets
-          </h2>
-          <div className="flex gap-3 mb-4 justify-center">
-            {PRESET_DURATIONS.map((preset) => (
-              <button
-                key={preset.value}
-                onClick={() => setDuration(preset.value)}
-                className={`w-16 h-16 rounded-full text-2xl font-bold transition-all active:scale-95 ${
-                  totalDuration === preset.value
-                    ? 'bg-amber-500 text-white shadow-md'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                }`}
-              >
-                {preset.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex gap-2">
-            <input
-              type="number"
-              value={customDuration}
-              onChange={(e) => setCustomDuration(e.target.value)}
-              placeholder="Custom (minutes)"
-              className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none"
-              min="1"
-            />
-            <button
-              onClick={handleCustomDuration}
-              className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-medium transition-all active:scale-95"
-            >
-              Set
-            </button>
-          </div>
         </div>
       </main>
     </div>
