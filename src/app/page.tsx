@@ -248,7 +248,26 @@ export default function Home() {
           Sandglass Timer
         </h1>
 
-        <div className="flex flex-col items-center gap-6">
+        <button
+          onClick={flip}
+          className="flex items-center gap-6 p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer border-none"
+          title="Click to flip timer"
+          aria-label="Flip timer"
+        >
+          <svg
+            className="w-10 h-10 text-gray-400 dark:text-gray-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+            />
+          </svg>
+
           <div
             className="text-7xl font-mono font-bold tabular-nums transition-colors duration-300"
             style={{ color: getTimerColor() }}
@@ -256,27 +275,20 @@ export default function Home() {
             {formatTime(timeRemaining)}
           </div>
 
-          <button
-            onClick={flip}
-            className="p-5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold shadow-lg transition-all active:scale-95"
-            title="Flip timer"
-            aria-label="Flip timer"
+          <svg
+            className="w-10 h-10 text-gray-400 dark:text-gray-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              className="w-8 h-8"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-              />
-            </svg>
-          </button>
-        </div>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+            />
+          </svg>
+        </button>
 
         <div className="flex flex-wrap gap-3 justify-center w-full">
           <button
