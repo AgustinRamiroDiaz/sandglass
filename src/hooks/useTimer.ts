@@ -14,15 +14,23 @@ interface UseTimerReturn {
   totalDuration: number;
 }
 
-export function useTimer(initialDuration: number = 180): UseTimerReturn {
+interface SoundConfig {
+  enabled: boolean;
+  alertTimes: number[];
+  alertFinish: boolean;
+}
+
+export function useTimer(
+  initialDuration: number = 180,
+  soundConfig: SoundConfig = { enabled: true, alertTimes: [30, 5], alertFinish: true }
+): UseTimerReturn {
   const [totalDuration, setTotalDuration] = useState(initialDuration);
   const [timeRemaining, setTimeRemaining] = useState(initialDuration);
   const [isRunning, setIsRunning] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
-  const has30SecondWarning = useRef(false);
-  const has5SecondWarning = useRef(false);
+  const triggeredAlerts = useRef<Set<number>>(new Set());
 
   // Initialize Web Audio API
   useEffect(() => {
@@ -65,27 +73,26 @@ export function useTimer(initialDuration: number = 180): UseTimerReturn {
         setTimeRemaining((prev) => {
           const newTime = Math.max(0, prev - 0.1);
 
-          // 30 second warning
-          if (newTime <= 30 && newTime > 29.9 && !has30SecondWarning.current) {
-            has30SecondWarning.current = true;
-            playBeep(800, 0.2);
-            setTimeout(() => playBeep(800, 0.2), 250);
-          }
-
-          // 5 second warning
-          if (newTime <= 5 && newTime > 4.9 && !has5SecondWarning.current) {
-            has5SecondWarning.current = true;
-            playBeep(1000, 0.15);
-            setTimeout(() => playBeep(1000, 0.15), 200);
-            setTimeout(() => playBeep(1000, 0.15), 400);
+          // Check for configurable time alerts
+          if (soundConfig.enabled) {
+            soundConfig.alertTimes.forEach((alertTime) => {
+              if (newTime <= alertTime && newTime > alertTime - 0.1 && !triggeredAlerts.current.has(alertTime)) {
+                triggeredAlerts.current.add(alertTime);
+                // Double beep for alerts
+                playBeep(800, 0.2);
+                setTimeout(() => playBeep(800, 0.2), 250);
+              }
+            });
           }
 
           // Timer finished
           if (newTime === 0) {
             setIsRunning(false);
-            playBeep(1200, 0.3);
-            setTimeout(() => playBeep(1200, 0.3), 350);
-            setTimeout(() => playBeep(1200, 0.5), 700);
+            if (soundConfig.enabled && soundConfig.alertFinish) {
+              playBeep(1200, 0.3);
+              setTimeout(() => playBeep(1200, 0.3), 350);
+              setTimeout(() => playBeep(1200, 0.5), 700);
+            }
           }
 
           return newTime;
@@ -102,7 +109,7 @@ export function useTimer(initialDuration: number = 180): UseTimerReturn {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, timeRemaining, playBeep]);
+  }, [isRunning, timeRemaining, playBeep, soundConfig.enabled, soundConfig.alertTimes, soundConfig.alertFinish]);
 
   const start = useCallback(() => {
     setIsRunning(true);
@@ -116,15 +123,13 @@ export function useTimer(initialDuration: number = 180): UseTimerReturn {
     setIsRunning(false);
     setTimeRemaining(totalDuration);
     setIsFlipped(false);
-    has30SecondWarning.current = false;
-    has5SecondWarning.current = false;
+    triggeredAlerts.current.clear();
   }, [totalDuration]);
 
   const flip = useCallback(() => {
     setIsFlipped((prev) => !prev);
     setTimeRemaining(totalDuration - timeRemaining);
-    has30SecondWarning.current = false;
-    has5SecondWarning.current = false;
+    triggeredAlerts.current.clear();
   }, [timeRemaining, totalDuration]);
 
   const setDuration = useCallback((duration: number) => {
@@ -132,8 +137,7 @@ export function useTimer(initialDuration: number = 180): UseTimerReturn {
     setTimeRemaining(duration);
     setIsRunning(false);
     setIsFlipped(false);
-    has30SecondWarning.current = false;
-    has5SecondWarning.current = false;
+    triggeredAlerts.current.clear();
   }, []);
 
   return {

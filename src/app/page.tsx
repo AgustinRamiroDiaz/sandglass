@@ -11,6 +11,14 @@ const PRESET_DURATIONS = [
 ];
 
 export default function Home() {
+  const [customDuration, setCustomDuration] = useState('');
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [showConfig, setShowConfig] = useState(false);
+  const [soundsEnabled, setSoundsEnabled] = useState(true);
+  const [alertTimes, setAlertTimes] = useState<number[]>([30, 5]);
+  const [alertFinish, setAlertFinish] = useState(true);
+  const [newAlertTime, setNewAlertTime] = useState('');
+
   const {
     timeRemaining,
     isRunning,
@@ -20,11 +28,11 @@ export default function Home() {
     flip,
     setDuration,
     totalDuration,
-  } = useTimer(180);
-
-  const [customDuration, setCustomDuration] = useState('');
-  const [showTutorial, setShowTutorial] = useState(false);
-  const [showConfig, setShowConfig] = useState(false);
+  } = useTimer(180, {
+    enabled: soundsEnabled,
+    alertTimes,
+    alertFinish,
+  });
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -48,6 +56,18 @@ export default function Home() {
       setDuration(duration * 60);
       setCustomDuration('');
     }
+  };
+
+  const handleAddAlertTime = () => {
+    const time = parseInt(newAlertTime);
+    if (!isNaN(time) && time > 0 && !alertTimes.includes(time)) {
+      setAlertTimes([...alertTimes, time].sort((a, b) => b - a));
+      setNewAlertTime('');
+    }
+  };
+
+  const handleRemoveAlertTime = (time: number) => {
+    setAlertTimes(alertTimes.filter((t) => t !== time));
   };
 
   return (
@@ -138,12 +158,12 @@ export default function Home() {
             </div>
             <div className="space-y-4 text-gray-700 dark:text-gray-300">
               <div>
-                <h3 className="font-semibold mb-1">Flip Button</h3>
-                <p className="text-sm">Use the flip button to swap the remaining time with the elapsed time, like flipping an hourglass.</p>
+                <h3 className="font-semibold mb-1">Flip Timer</h3>
+                <p className="text-sm">Click the timer display to flip it, swapping the remaining time with the elapsed time, like flipping an hourglass.</p>
               </div>
               <div>
-                <h3 className="font-semibold mb-1">Alerts</h3>
-                <p className="text-sm">You&apos;ll receive alerts at 30 seconds and 5 seconds remaining.</p>
+                <h3 className="font-semibold mb-1">Sound Alerts</h3>
+                <p className="text-sm">Configure custom sound alerts at any time intervals you choose in the configuration panel.</p>
               </div>
               <div>
                 <h3 className="font-semibold mb-1">Controls</h3>
@@ -236,6 +256,97 @@ export default function Home() {
                   >
                     Set
                   </button>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">
+                  Sound Alerts
+                </h3>
+                <div className="space-y-3">
+                  <label className="flex items-center justify-between cursor-pointer">
+                    <span className="text-gray-700 dark:text-gray-300">Enable Sounds</span>
+                    <input
+                      type="checkbox"
+                      checked={soundsEnabled}
+                      onChange={(e) => setSoundsEnabled(e.target.checked)}
+                      className="w-5 h-5 rounded border-gray-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
+                    />
+                  </label>
+
+                  {soundsEnabled && (
+                    <>
+                      <div className="pl-4 space-y-2">
+                        <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          Time Alerts (seconds remaining)
+                        </div>
+                        {alertTimes.length > 0 ? (
+                          <div className="space-y-2">
+                            {alertTimes.map((time) => (
+                              <div
+                                key={time}
+                                className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 px-3 py-2 rounded-lg"
+                              >
+                                <span className="text-sm text-gray-700 dark:text-gray-300">
+                                  {time} second{time !== 1 ? 's' : ''}
+                                </span>
+                                <button
+                                  onClick={() => handleRemoveAlertTime(time)}
+                                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                                  aria-label={`Remove ${time} second alert`}
+                                >
+                                  <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M6 18L18 6M6 6l12 12"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                            No time alerts configured
+                          </p>
+                        )}
+
+                        <div className="flex gap-2 mt-3">
+                          <input
+                            type="number"
+                            value={newAlertTime}
+                            onChange={(e) => setNewAlertTime(e.target.value)}
+                            placeholder="Add alert (seconds)"
+                            className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none"
+                            min="1"
+                          />
+                          <button
+                            onClick={handleAddAlertTime}
+                            className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-medium transition-all active:scale-95"
+                          >
+                            Add
+                          </button>
+                        </div>
+                      </div>
+
+                      <label className="flex items-center justify-between cursor-pointer pl-4 pt-2 border-t border-gray-200 dark:border-gray-600">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Timer Finished Alert</span>
+                        <input
+                          type="checkbox"
+                          checked={alertFinish}
+                          onChange={(e) => setAlertFinish(e.target.checked)}
+                          className="w-4 h-4 rounded border-gray-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
+                        />
+                      </label>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
