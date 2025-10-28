@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTimer } from '@/hooks/useTimer';
 
 const PRESET_DURATIONS = [
@@ -18,6 +18,59 @@ export default function Home() {
   const [alertTimes, setAlertTimes] = useState<number[]>([30, 5]);
   const [alertFinish, setAlertFinish] = useState(true);
   const [newAlertTime, setNewAlertTime] = useState('');
+  const [initialDuration, setInitialDuration] = useState(180);
+
+  // Load configuration from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedSoundsEnabled = localStorage.getItem('soundsEnabled');
+      const savedAlertTimes = localStorage.getItem('alertTimes');
+      const savedAlertFinish = localStorage.getItem('alertFinish');
+      const savedDuration = localStorage.getItem('duration');
+
+      if (savedSoundsEnabled !== null) {
+        setSoundsEnabled(savedSoundsEnabled === 'true');
+      }
+      if (savedAlertTimes !== null) {
+        try {
+          const parsed = JSON.parse(savedAlertTimes);
+          if (Array.isArray(parsed)) {
+            setAlertTimes(parsed);
+          }
+        } catch (e) {
+          console.error('Failed to parse alertTimes from localStorage', e);
+        }
+      }
+      if (savedAlertFinish !== null) {
+        setAlertFinish(savedAlertFinish === 'true');
+      }
+      if (savedDuration !== null) {
+        const duration = parseInt(savedDuration);
+        if (!isNaN(duration)) {
+          setInitialDuration(duration);
+        }
+      }
+    }
+  }, []);
+
+  // Save configuration to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('soundsEnabled', soundsEnabled.toString());
+    }
+  }, [soundsEnabled]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('alertTimes', JSON.stringify(alertTimes));
+    }
+  }, [alertTimes]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('alertFinish', alertFinish.toString());
+    }
+  }, [alertFinish]);
 
   const {
     timeRemaining,
@@ -26,13 +79,21 @@ export default function Home() {
     pause,
     reset,
     flip,
-    setDuration,
+    setDuration: setTimerDuration,
     totalDuration,
-  } = useTimer(180, {
+  } = useTimer(initialDuration, {
     enabled: soundsEnabled,
     alertTimes,
     alertFinish,
   });
+
+  // Wrapper to save duration to localStorage
+  const setDuration = (duration: number) => {
+    setTimerDuration(duration);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('duration', duration.toString());
+    }
+  };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
