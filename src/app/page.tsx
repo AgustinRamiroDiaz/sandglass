@@ -4,10 +4,10 @@ import { useState } from 'react';
 import { useTimer } from '@/hooks/useTimer';
 
 const PRESET_DURATIONS = [
-  { label: '1 min', value: 60 },
-  { label: '3 min', value: 180 },
-  { label: '5 min', value: 300 },
-  { label: '10 min', value: 600 },
+  { label: '1', value: 60 },
+  { label: '3', value: 180 },
+  { label: '5', value: 300 },
+  { label: '10', value: 600 },
 ];
 
 export default function Home() {
@@ -188,7 +188,12 @@ export default function Home() {
           </button>
           <button
             onClick={reset}
-            className="px-8 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-full font-semibold shadow-lg transition-all active:scale-95 min-w-[120px]"
+            disabled={isRunning}
+            className={`px-8 py-3 rounded-full font-semibold shadow-lg transition-all min-w-[120px] ${
+              isRunning
+                ? 'bg-gray-400 dark:bg-gray-600 text-gray-200 dark:text-gray-500 cursor-not-allowed'
+                : 'bg-gray-600 hover:bg-gray-700 text-white active:scale-95'
+            }`}
           >
             Reset
           </button>
@@ -198,12 +203,12 @@ export default function Home() {
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
             Duration Presets
           </h2>
-          <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="flex gap-3 mb-4 justify-center">
             {PRESET_DURATIONS.map((preset) => (
               <button
                 key={preset.value}
                 onClick={() => setDuration(preset.value)}
-                className={`px-4 py-3 rounded-lg font-medium transition-all active:scale-95 ${
+                className={`w-16 h-16 rounded-full text-2xl font-bold transition-all active:scale-95 ${
                   totalDuration === preset.value
                     ? 'bg-amber-500 text-white shadow-md'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
