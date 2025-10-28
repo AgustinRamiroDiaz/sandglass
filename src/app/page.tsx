@@ -33,6 +33,15 @@ export default function Home() {
     return `${mins}:${secs.toString().padStart(2, '0')}.${ms}`;
   };
 
+  const getTimerColor = () => {
+    const progress = timeRemaining / totalDuration;
+    // Linear interpolation from green (rgb(34, 197, 94)) to red (rgb(239, 68, 68))
+    const red = Math.round(34 + (239 - 34) * (1 - progress));
+    const green = Math.round(197 - (197 - 68) * (1 - progress));
+    const blue = Math.round(94 - (94 - 68) * (1 - progress));
+    return `rgb(${red}, ${green}, ${blue})`;
+  };
+
   const handleCustomDuration = () => {
     const duration = parseInt(customDuration);
     if (!isNaN(duration) && duration > 0) {
@@ -240,7 +249,10 @@ export default function Home() {
         </h1>
 
         <div className="flex flex-col items-center gap-6">
-          <div className="text-7xl font-mono font-bold text-amber-900 dark:text-amber-100 tabular-nums">
+          <div
+            className="text-7xl font-mono font-bold tabular-nums transition-colors duration-300"
+            style={{ color: getTimerColor() }}
+          >
             {formatTime(timeRemaining)}
           </div>
 
