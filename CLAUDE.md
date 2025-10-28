@@ -1,0 +1,1 @@
+Always run `npm run build` to check that the changes compile correctly.

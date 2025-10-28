@@ -14,7 +14,6 @@ export default function Home() {
   const {
     timeRemaining,
     isRunning,
-    isFlipped,
     start,
     pause,
     reset,
@@ -135,7 +134,7 @@ export default function Home() {
               </div>
               <div>
                 <h3 className="font-semibold mb-1">Alerts</h3>
-                <p className="text-sm">You'll receive alerts at 30 seconds and 5 seconds remaining.</p>
+                <p className="text-sm">You&apos;ll receive alerts at 30 seconds and 5 seconds remaining.</p>
               </div>
               <div>
                 <h3 className="font-semibold mb-1">Controls</h3>
