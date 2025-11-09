@@ -443,14 +443,14 @@ export default function Home() {
         </div>
       )}
 
-      <main className="flex flex-col items-center gap-8 w-full max-w-md">
+      <main className="flex flex-col items-center gap-8 w-full px-4">
         <h1 className="text-4xl font-bold text-amber-900 dark:text-amber-100 text-center">
           Sandglass Timer
         </h1>
 
         <button
           onClick={flip}
-          className="flex items-center justify-center gap-6 p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer border-none min-h-[33vh]"
+          className="flex items-center justify-center gap-6 p-6 bg-white dark:bg-gray-800 rounded-3xl shadow-2xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer border-none w-full h-[75vh]"
           title="Click to flip timer"
           aria-label="Flip timer"
         >
